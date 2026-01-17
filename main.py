@@ -1,4 +1,5 @@
 import pygame
+import math
 
 pygame.init()
 screen = pygame.display.set_mode((384, 384))
@@ -20,6 +21,9 @@ room2_img = pygame.transform.scale(room2_img, (width, height))
 
 room3_img = pygame.image.load("assets/room3.png")
 room3_img = pygame.transform.scale(room3_img, (width, height))
+
+room4_img = pygame.image.load("assets/room4.png")
+room4_img = pygame.transform.scale(room4_img, (width, height))
 
 player_x = 100
 player_y = 100
@@ -87,6 +91,51 @@ vitesse = 4
 def limite(v, minimum, maximum):
     return max(minimum, min(v, maximum))
 
+# ========== SYSTEME DE DEGRADATION ==========
+# La degradation augmente avec le temps, le joueur doit trouver un objet pour la reinitialiser
+degradation = 0  # 0 = pas de degradation, 1 = mort (ecran noir)
+degradation_speed = 0.002  # Vitesse d'augmentation par frame (ajustable)
+max_radius = 500  # Rayon max de la zone visible (en pixels)
+
+def create_vignette_surface(center_x, center_y, radius, screen_w, screen_h, block_size=16):
+    """
+    Cree une surface avec un effet de vignette PIXELISE.
+    Les pixels sont assombris par blocs en fonction de la distance au centre.
+    block_size = taille des blocs pour l'effet pixel art
+    """
+    # Surface noire avec alpha
+    vignette = pygame.Surface((screen_w, screen_h), pygame.SRCALPHA)
+    
+    # Parcourir par blocs pour l'effet pixelise
+    for by in range(0, screen_h, block_size):
+        for bx in range(0, screen_w, block_size):
+            # Centre du bloc
+            block_center_x = bx + block_size // 2
+            block_center_y = by + block_size // 2
+            
+            # Distance du bloc au centre de la vignette
+            distance = math.sqrt((block_center_x - center_x)**2 + (block_center_y - center_y)**2)
+            
+            # Calculer l'alpha (opacite) en fonction de la distance
+            if radius <= 0:
+                alpha = 255  # Tout noir si radius = 0
+            elif distance < radius * 0.5:
+                alpha = 0  # Zone centrale transparente
+            elif distance < radius:
+                # Zone de transition (fondu)
+                factor = (distance - radius * 0.5) / (radius * 0.5)
+                alpha = int(255 * factor)
+            else:
+                alpha = 255  # Zone externe noire
+            
+            # Dessiner le bloc avec l'alpha calcule
+            pygame.draw.rect(vignette, (0, 0, 0, alpha), (bx, by, block_size, block_size))
+    
+    return vignette
+
+# Variable pour l'etat du jeu
+game_over = False
+
 
 
 while True:
@@ -118,13 +167,39 @@ while True:
             current_room_name = door["next"]  # Changer de nom de room
             player_x, player_y = door["spawn"] # Téléporter le joueur
     
-    # Limiter le joueur à l'écran
+    # Limiter le joueur a l'ecran
     player_x = limite(player_x, 0, width - player_width)
     player_y = limite(player_y, 0, height - player_height) 
+    
+    # ========== MISE A JOUR DE LA DEGRADATION ==========
+    if not game_over:
+        degradation += degradation_speed
+        if degradation >= 1.0:
+            degradation = 1.0
+            game_over = True
+    
+    # Calculer le rayon de vision (diminue avec la degradation)
+    current_radius = max_radius * (1 - degradation)
     
     clock.tick(60)
 
     # Afficher l'image de la room actuelle
     screen.blit(current_room_data["image"], (0, 0))
     screen.blit(player_img, (player_x, player_y)) # Dessine le joueur
-    pygame.display.update()   
+    
+    # ========== DESSINER LA VIGNETTE DE DEGRADATION ==========
+    # Centre de la vignette = centre du joueur
+    player_center_x = player_x + player_width // 2
+    player_center_y = player_y + player_height // 2
+    
+    vignette_surface = create_vignette_surface(player_center_x, player_center_y, current_radius, width, height)
+    screen.blit(vignette_surface, (0, 0))
+    
+    # Afficher GAME OVER si mort
+    if game_over:
+        font = pygame.font.Font(None, 74)
+        text = font.render("GAME OVER", True, (255, 0, 0))
+        text_rect = text.get_rect(center=(width // 2, height // 2))
+        screen.blit(text, text_rect)
+    
+    pygame.display.update()
