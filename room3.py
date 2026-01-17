@@ -7,7 +7,8 @@ height = 384
 TAILLE_BLOCS_X = 10
 TAILLE_BLOCS_Y = 10
 JOINT_SIZE = 2
-GRIS_BASE = 70
+# Theme Lave/Feu - Rouge sombre
+ROUGE_BASE = 35  # Rouge fonce pour le sol
 
 img = Image.new('RGB', (width, height), (0, 0, 0))
 pixels = img.load()
@@ -26,19 +27,19 @@ for y in range(height):
 
         if tile_id not in Couleurs_Bloques:
             variation = random.randint(-10, 10)
-            gris = GRIS_BASE + variation
-            gris = max(0, min(255, gris))
-            Couleurs_Bloques[tile_id] = gris
+            rouge = ROUGE_BASE + variation
+            rouge = max(0, min(255, rouge))
+            Couleurs_Bloques[tile_id] = rouge
 
-        gris = Couleurs_Bloques[tile_id]
+        rouge = Couleurs_Bloques[tile_id]
 
         lx = (x + offset) % TAILLE_BLOCS_X
         ly = y % TAILLE_BLOCS_Y
 
         if lx < JOINT_SIZE or ly < JOINT_SIZE:
-            pixels[x, y] = (40, 40, 40)
+            pixels[x, y] = (20, 10, 10)  # Joints noir-rouge
         else:
-            pixels[x, y] = (gris, gris, gris)
+            pixels[x, y] = (rouge + 30, rouge, rouge - 10)  # Sol rouge sombre
 
 
 def draw_rect(pixels, x1, y1, x2, y2, color):
@@ -78,48 +79,52 @@ def draw_outline_rect(pixels, x1, y1, w, h, color):
             if 0 <= x1 < width: pixels[x1, y] = color
             if 0 <= x1 + w - 1 < width: pixels[x1 + w - 1, y] = color
 
-STONE_DARK = (35, 35, 35)
-STONE_MID  = (90, 90, 90)
-STONE_LIGHT = (115, 115, 115)
-RED_DARK = (110, 20, 20)
-RED_MID  = (140, 30, 30)
-ORANGE   = (220, 140, 40)
+# Couleurs theme Lave/Feu
+ROCK_DARK = (30, 15, 15)       # Roche volcanique foncee
+ROCK_MID  = (60, 30, 25)       # Roche volcanique moyenne
+ROCK_LIGHT = (90, 50, 40)      # Roche volcanique claire
+LAVA_DARK = (180, 60, 20)      # Lave foncee
+LAVA_MID  = (220, 100, 30)     # Lave moyenne
+FIRE_GLOW = (255, 180, 50)     # Flamme brillante
 
-# Piliers (on évite trop près de la porte gauche)
+# Colonnes de roche volcanique
 pillar_w, pillar_h = 18, 70
 pillar_y = 80
 
-draw_rect(pixels, 90, pillar_y, 90 + pillar_w, pillar_y + pillar_h, STONE_MID)
-draw_outline_rect(pixels, 90, pillar_y, pillar_w, pillar_h, STONE_DARK)
-draw_rect(pixels, 92, pillar_y + 4, 94, pillar_y + pillar_h - 4, STONE_LIGHT)
+draw_rect(pixels, 90, pillar_y, 90 + pillar_w, pillar_y + pillar_h, ROCK_MID)
+draw_outline_rect(pixels, 90, pillar_y, pillar_w, pillar_h, ROCK_DARK)
+draw_rect(pixels, 92, pillar_y + 4, 94, pillar_y + pillar_h - 4, ROCK_LIGHT)
 
-draw_rect(pixels, 280, pillar_y, 280 + pillar_w, pillar_y + pillar_h, STONE_MID)
-draw_outline_rect(pixels, 280, pillar_y, pillar_w, pillar_h, STONE_DARK)
-draw_rect(pixels, 282, pillar_y + 4, 284, pillar_y + pillar_h - 4, STONE_LIGHT)
+draw_rect(pixels, 280, pillar_y, 280 + pillar_w, pillar_y + pillar_h, ROCK_MID)
+draw_outline_rect(pixels, 280, pillar_y, pillar_w, pillar_h, ROCK_DARK)
+draw_rect(pixels, 282, pillar_y + 4, 284, pillar_y + pillar_h - 4, ROCK_LIGHT)
 
-# Tapis
+# Mare de lave (remplace le tapis)
 carpet_w, carpet_h = 120, 50
 carpet_x = width // 2 - carpet_w // 2
 carpet_y = height // 2 + 40
-draw_rect(pixels, carpet_x, carpet_y, carpet_x + carpet_w, carpet_y + carpet_h, RED_MID)
-draw_outline_rect(pixels, carpet_x, carpet_y, carpet_w, carpet_h, RED_DARK)
+draw_rect(pixels, carpet_x, carpet_y, carpet_x + carpet_w, carpet_y + carpet_h, LAVA_MID)
+draw_outline_rect(pixels, carpet_x, carpet_y, carpet_w, carpet_h, LAVA_DARK)
 
-# Caillou
+# Caillou (contraste pierre noire)
+STONE_DARK = (25, 20, 20)
+STONE_MID  = (50, 40, 35)
+STONE_LIGHT = (75, 60, 50)
 rock_x, rock_y = 60, 300
 draw_rect(pixels, rock_x, rock_y, rock_x + 14, rock_y + 10, STONE_MID)
 draw_outline_rect(pixels, rock_x, rock_y, 14, 10, STONE_DARK)
 draw_rect(pixels, rock_x + 2, rock_y + 2, rock_x + 5, rock_y + 4, STONE_LIGHT)
 
-# Torches (une à droite, une en haut)
+# Torches de feu infernal
 tx, ty = 330, 90
-draw_rect(pixels, tx, ty, tx + 6, ty + 14, STONE_DARK)
-draw_rect(pixels, tx + 1, ty - 6, tx + 5, ty, ORANGE)
-draw_outline_rect(pixels, tx + 1, ty - 6, 4, 6, (180, 100, 30))
+draw_rect(pixels, tx, ty, tx + 6, ty + 14, ROCK_DARK)
+draw_rect(pixels, tx + 1, ty - 6, tx + 5, ty, FIRE_GLOW)
+draw_outline_rect(pixels, tx + 1, ty - 6, 4, 6, (255, 120, 30))
 
 tx2, ty2 = 180, 60
-draw_rect(pixels, tx2, ty2, tx2 + 6, ty2 + 14, STONE_DARK)
-draw_rect(pixels, tx2 + 1, ty2 - 6, tx2 + 5, ty2, ORANGE)
-draw_outline_rect(pixels, tx2 + 1, ty2 - 6, 4, 6, (180, 100, 30))
+draw_rect(pixels, tx2, ty2, tx2 + 6, ty2 + 14, ROCK_DARK)
+draw_rect(pixels, tx2 + 1, ty2 - 6, tx2 + 5, ty2, FIRE_GLOW)
+draw_outline_rect(pixels, tx2 + 1, ty2 - 6, 4, 6, (255, 120, 30))
 
 img.save("assets/room3.png")
 print("Image créée !")

@@ -7,7 +7,8 @@ height = 384
 TAILLE_BLOCS_X = 10
 TAILLE_BLOCS_Y = 10
 JOINT_SIZE = 2
-GRIS_BASE = 70
+# Theme Nature/Foret - Vert mousse
+VERT_BASE = 45  # Vert fonce pour le sol
 
 img = Image.new('RGB', (width, height), (0, 0, 0))
 pixels = img.load()
@@ -26,19 +27,19 @@ for y in range(height):
 
         if tile_id not in Couleurs_Bloques:
             variation = random.randint(-10, 10)
-            gris = GRIS_BASE + variation
-            gris = max(0, min(255, gris))
-            Couleurs_Bloques[tile_id] = gris
+            vert = VERT_BASE + variation
+            vert = max(0, min(255, vert))
+            Couleurs_Bloques[tile_id] = vert
 
-        gris = Couleurs_Bloques[tile_id]
+        vert = Couleurs_Bloques[tile_id]
 
         lx = (x + offset) % TAILLE_BLOCS_X
         ly = y % TAILLE_BLOCS_Y
 
         if lx < JOINT_SIZE or ly < JOINT_SIZE:
-            pixels[x, y] = (40, 40, 40)
+            pixels[x, y] = (25, 35, 20)  # Joints vert fonce
         else:
-            pixels[x, y] = (gris, gris, gris)
+            pixels[x, y] = (30, vert + 20, 25)  # Sol vert mousse
 
 
 def draw_rect(pixels, x1, y1, x2, y2, color):
@@ -78,47 +79,51 @@ def draw_outline_rect(pixels, x1, y1, w, h, color):
             if 0 <= x1 < width: pixels[x1, y] = color
             if 0 <= x1 + w - 1 < width: pixels[x1 + w - 1, y] = color
 
-STONE_DARK = (35, 35, 35)
-STONE_MID  = (90, 90, 90)
-STONE_LIGHT = (115, 115, 115)
-RED_DARK = (110, 20, 20)
-RED_MID  = (140, 30, 30)
-ORANGE   = (220, 140, 40)
+# Couleurs theme Nature
+WOOD_DARK = (45, 30, 15)      # Bois fonce
+WOOD_MID  = (85, 55, 25)      # Bois moyen
+WOOD_LIGHT = (120, 80, 40)    # Bois clair
+LEAF_DARK = (20, 60, 20)      # Feuille fonce
+LEAF_MID  = (40, 100, 40)     # Feuille moyenne
+YELLOW_GLOW = (180, 200, 80)  # Luciole/Champignon
 
-# Piliers
+# Arbres/Troncs (remplacent les piliers)
 pillar_w, pillar_h = 18, 70
 pillar_y = 110
-draw_rect(pixels, 60, pillar_y, 60 + pillar_w, pillar_y + pillar_h, STONE_MID)
-draw_outline_rect(pixels, 60, pillar_y, pillar_w, pillar_h, STONE_DARK)
-draw_rect(pixels, 62, pillar_y + 4, 64, pillar_y + pillar_h - 4, STONE_LIGHT)
+draw_rect(pixels, 60, pillar_y, 60 + pillar_w, pillar_y + pillar_h, WOOD_MID)
+draw_outline_rect(pixels, 60, pillar_y, pillar_w, pillar_h, WOOD_DARK)
+draw_rect(pixels, 62, pillar_y + 4, 64, pillar_y + pillar_h - 4, WOOD_LIGHT)
 
-draw_rect(pixels, 280, pillar_y, 280 + pillar_w, pillar_y + pillar_h, STONE_MID)
-draw_outline_rect(pixels, 280, pillar_y, pillar_w, pillar_h, STONE_DARK)
-draw_rect(pixels, 282, pillar_y + 4, 284, pillar_y + pillar_h - 4, STONE_LIGHT)
+draw_rect(pixels, 280, pillar_y, 280 + pillar_w, pillar_y + pillar_h, WOOD_MID)
+draw_outline_rect(pixels, 280, pillar_y, pillar_w, pillar_h, WOOD_DARK)
+draw_rect(pixels, 282, pillar_y + 4, 284, pillar_y + pillar_h - 4, WOOD_LIGHT)
 
-# Tapis
+# Zone d'herbe/mousse (remplace le tapis)
 carpet_w, carpet_h = 120, 50
 carpet_x = width // 2 - carpet_w // 2
 carpet_y = height // 2 + 60
-draw_rect(pixels, carpet_x, carpet_y, carpet_x + carpet_w, carpet_y + carpet_h, RED_MID)
-draw_outline_rect(pixels, carpet_x, carpet_y, carpet_w, carpet_h, RED_DARK)
+draw_rect(pixels, carpet_x, carpet_y, carpet_x + carpet_w, carpet_y + carpet_h, LEAF_MID)
+draw_outline_rect(pixels, carpet_x, carpet_y, carpet_w, carpet_h, LEAF_DARK)
 
-# Caillou
+# Caillou (pierre grise pour contraste)
+STONE_DARK = (35, 35, 35)
+STONE_MID  = (90, 90, 90)
+STONE_LIGHT = (115, 115, 115)
 rock_x, rock_y = 90, 300
 draw_rect(pixels, rock_x, rock_y, rock_x + 14, rock_y + 10, STONE_MID)
 draw_outline_rect(pixels, rock_x, rock_y, 14, 10, STONE_DARK)
 draw_rect(pixels, rock_x + 2, rock_y + 2, rock_x + 5, rock_y + 4, STONE_LIGHT)
 
-# Torches (on évite le haut-centre)
+# Champignons lumineux (remplacent les torches)
 tx, ty = 40, 90
-draw_rect(pixels, tx, ty, tx + 6, ty + 14, STONE_DARK)
-draw_rect(pixels, tx + 1, ty - 6, tx + 5, ty, ORANGE)
-draw_outline_rect(pixels, tx + 1, ty - 6, 4, 6, (180, 100, 30))
+draw_rect(pixels, tx, ty, tx + 6, ty + 14, WOOD_DARK)
+draw_rect(pixels, tx + 1, ty - 6, tx + 5, ty, YELLOW_GLOW)
+draw_outline_rect(pixels, tx + 1, ty - 6, 4, 6, (140, 160, 60))
 
 tx2, ty2 = 330, 120
-draw_rect(pixels, tx2, ty2, tx2 + 6, ty2 + 14, STONE_DARK)
-draw_rect(pixels, tx2 + 1, ty2 - 6, tx2 + 5, ty2, ORANGE)
-draw_outline_rect(pixels, tx2 + 1, ty2 - 6, 4, 6, (180, 100, 30))
+draw_rect(pixels, tx2, ty2, tx2 + 6, ty2 + 14, WOOD_DARK)
+draw_rect(pixels, tx2 + 1, ty2 - 6, tx2 + 5, ty2, YELLOW_GLOW)
+draw_outline_rect(pixels, tx2 + 1, ty2 - 6, 4, 6, (140, 160, 60))
 
 img.save("assets/room2.png")
 print("Image créée !")

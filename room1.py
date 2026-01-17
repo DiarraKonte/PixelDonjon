@@ -4,8 +4,8 @@ import random
 width = 384
 height = 384
 
-TAILLE_BLOCS_X = 10   # taille d’un carreau
-TAILLE_BLOCS_Y = 10
+TAILLE_BLOCS_X = 6   # taille d’un carreau
+TAILLE_BLOCS_Y = 6
 JOINT_SIZE = 2
 GRIS_BASE = 70
 
