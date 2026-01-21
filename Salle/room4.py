@@ -64,9 +64,7 @@ draw_door(pixels, (width - DOOR_W_H)//2, 0, DOOR_W_H, DOOR_H_H)
 draw_door(pixels, 0, (height - DOOR_H_V)//2, DOOR_W_V, DOOR_H_V)
 
 
-# ---------------------------
-# DECOS SIMPLES
-# ---------------------------
+# deco trees simple
 
 def draw_outline_rect(pixels, x1, y1, w, h, color):
     for x in range(x1, x1 + w):
@@ -85,7 +83,7 @@ RED_DARK = (110, 20, 20)
 RED_MID  = (140, 30, 30)
 ORANGE   = (220, 140, 40)
 
-# Piliers (on les remonte un peu pour éviter la porte bas)
+# piliers 
 pillar_w, pillar_h = 18, 70
 pillar_y = 60
 
@@ -97,20 +95,20 @@ draw_rect(pixels, 280, pillar_y, 280 + pillar_w, pillar_y + pillar_h, STONE_MID)
 draw_outline_rect(pixels, 280, pillar_y, pillar_w, pillar_h, STONE_DARK)
 draw_rect(pixels, 282, pillar_y + 4, 284, pillar_y + pillar_h - 4, STONE_LIGHT)
 
-# Tapis (un peu plus haut)
+# tapis 
 carpet_w, carpet_h = 120, 50
 carpet_x = width // 2 - carpet_w // 2
 carpet_y = height // 2 + 20
 draw_rect(pixels, carpet_x, carpet_y, carpet_x + carpet_w, carpet_y + carpet_h, RED_MID)
 draw_outline_rect(pixels, carpet_x, carpet_y, carpet_w, carpet_h, RED_DARK)
 
-# Caillou
+# caillou
 rock_x, rock_y = 90, 290
 draw_rect(pixels, rock_x, rock_y, rock_x + 14, rock_y + 10, STONE_MID)
 draw_outline_rect(pixels, rock_x, rock_y, 14, 10, STONE_DARK)
 draw_rect(pixels, rock_x + 2, rock_y + 2, rock_x + 5, rock_y + 4, STONE_LIGHT)
 
-# Torches
+# torches
 tx, ty = 40, 60
 draw_rect(pixels, tx, ty, tx + 6, ty + 14, STONE_DARK)
 draw_rect(pixels, tx + 1, ty - 6, tx + 5, ty, ORANGE)

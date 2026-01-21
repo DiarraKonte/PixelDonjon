@@ -1,38 +1,38 @@
 from PIL import Image
 
-# Dimensions du sprite du joueur (16x16 pixels)
+# dimensions du sprite du joueur (16x16 pixels)
 WIDTH = 32
 HEIGHT = 32
 
-# Création de l'image avec transparence (RGBA)
+# creation de l'image avec transparence (RGBA)
 img = Image.new('RGBA', (WIDTH, HEIGHT), (0, 0, 0, 0))
 pixels = img.load()
 
 # === PALETTE DE COULEURS ===
 TRANSPARENT = (0, 0, 0, 0)
 
-# Couleurs de la peau
+# couleurs de la peau
 SKIN = (255, 206, 180, 255)
 SKIN_DARK = (220, 170, 140, 255)
 
-# Couleurs des cheveux
+# couleurs des cheveux
 HAIR = (60, 40, 30, 255)
 HAIR_DARK = (40, 25, 15, 255)
 
-# Couleurs des yeux
+# couleurs des yeux
 EYE = (40, 40, 40, 255)
 EYE_WHITE = (255, 255, 255, 255)
 
-# Couleurs du t-shirt (bleu)
+# couleurs du t-shirt (bleu)
 SHIRT = (70, 100, 170, 255)
 SHIRT_DARK = (50, 70, 130, 255)
 SHIRT_LIGHT = (100, 130, 200, 255)
 
-# Couleurs du pantalon
+# couleurs du pantalon
 PANTS = (50, 50, 60, 255)
 PANTS_DARK = (30, 30, 40, 255)
 
-# Couleurs des chaussures
+# couleurs des chaussures
 SHOES = (80, 50, 30, 255)
 SHOES_DARK = (50, 30, 15, 255)
 
@@ -66,37 +66,35 @@ def draw_line_v(x, y1, y2, color):
 # === DESSIN DU PERSONNAGE ===
 
 # --- CHEVEUX (haut de la tête) ---
-# Ligne du haut des cheveux
+# ligne du haut des cheveux
 draw_line_h(6, 11, 1, HAIR_DARK)
-# Corps des cheveux
+# corps des cheveux
 draw_rect(5, 2, 12, 4, HAIR)
 draw_pixel(5, 2, HAIR_DARK)
 draw_pixel(11, 2, HAIR_DARK)
-# Mèches sur les côtés
+# meche sur les côtés
 draw_pixel(4, 3, HAIR)
 draw_pixel(12, 3, HAIR)
 
-# --- VISAGE ---
-# Forme du visage
+# forme du visage
 draw_rect(5, 4, 12, 8, SKIN)
-# Ombrage du visage
+# opmbre du visage
 draw_line_v(5, 4, 8, SKIN_DARK)
 draw_line_v(11, 4, 8, SKIN_DARK)
 draw_line_h(5, 12, 7, SKIN_DARK)
 
-# Yeux
+# yeux
 draw_pixel(6, 5, EYE_WHITE)
 draw_pixel(7, 5, EYE)
 draw_pixel(9, 5, EYE)
 draw_pixel(10, 5, EYE_WHITE)
 
-# --- COU ---
+# cou
 draw_rect(7, 8, 10, 9, SKIN)
 
-# --- T-SHIRT ---
-# Corps du t-shirt
+# corps du t-shirt
 draw_rect(5, 9, 12, 13, SHIRT)
-# Ombrage du t-shirt
+#ombre du t-shirt
 draw_line_v(5, 9, 13, SHIRT_DARK)
 draw_line_v(11, 9, 13, SHIRT_DARK)
 draw_line_h(5, 12, 12, SHIRT_DARK)
@@ -104,7 +102,7 @@ draw_line_h(5, 12, 12, SHIRT_DARK)
 draw_pixel(7, 10, SHIRT_LIGHT)
 draw_pixel(8, 10, SHIRT_LIGHT)
 
-# Manches / Bras
+# mache et bras
 draw_rect(3, 9, 5, 12, SHIRT)
 draw_rect(12, 9, 14, 12, SHIRT)
 draw_pixel(3, 9, SHIRT_DARK)
@@ -118,21 +116,20 @@ draw_pixel(13, 12, SKIN)
 
 # --- PANTALON ---
 draw_rect(5, 13, 12, 15, PANTS)
-# Ombrage pantalon
+# ombre pantalon
 draw_line_v(5, 13, 15, PANTS_DARK)
 draw_line_v(11, 13, 15, PANTS_DARK)
-# Séparation des jambes
+# Separer les jambes
 draw_line_v(8, 14, 15, PANTS_DARK)
 
-# --- CHAUSSURES ---
+# chaussure 
 draw_rect(5, 15, 8, 16, SHOES)
 draw_rect(9, 15, 12, 16, SHOES)
-# Ombrage chaussures
+# ombre chaussure
 draw_pixel(5, 15, SHOES_DARK)
 draw_pixel(11, 15, SHOES_DARK)
 
 
-# === SAUVEGARDE ===
 img.save("assets/player.png")
 print("✓ Sprite du joueur créé : assets/player.png")
 print(f"  Dimensions : {WIDTH}x{HEIGHT} pixels")
