@@ -37,9 +37,8 @@ def create_star_image():
         
     try:
         pygame.image.save(surface, "assets/etoile.png")
-        print("Image 'assets/etoile.png' créée avec succès !")
-    except Exception as e:
-        print(f"Erreur lors de la sauvegarde : {e}")
+        print("Étoile créée")
+
 
 if __name__ == "__main__":
     create_star_image()

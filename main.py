@@ -3,6 +3,9 @@ import math
 import random
 from gestion_objets import Gestion_objets
 from constantes import *
+from UI.ui_menu import render_menu
+from UI.ui_aide import render_aide
+from UI.ui_gameover import render_gameover
 
 pygame.init()
 width = WIDTH
@@ -111,6 +114,7 @@ max_radius = 500  # rayon max de la zone visible (en pixels)
 
 # ========== SYSTEME D'OBJETS ==========
 gestionnaire_objets = Gestion_objets(SCALE)
+gestionnaire_objets.spawn_aleatoire("room1")
 gestionnaire_objets.spawn_aleatoire("room2")
 gestionnaire_objets.spawn_aleatoire("room3")
 gestionnaire_objets.spawn_aleatoire("room4")
@@ -193,6 +197,7 @@ def reset_game():
     
     # Réinitialiser les objets
     gestionnaire_objets = Gestion_objets(SCALE)
+    gestionnaire_objets.spawn_aleatoire("room1")
     gestionnaire_objets.spawn_aleatoire("room2")
     gestionnaire_objets.spawn_aleatoire("room3")
     gestionnaire_objets.spawn_aleatoire("room4")
@@ -231,15 +236,15 @@ while True:
             
             # Dans le game over
             elif game_state_mode == GAME_OVER:
-                # Bouton "Rejouer"
-                restart_button_rect = pygame.Rect(width // 2 - 120, height // 2 + 130, 240, 60)
-                if restart_button_rect.collidepoint(mouse_x, mouse_y):
+                # Zone cliquable REJOUER
+                rejouer_rect = pygame.Rect(60, 480, 250, 50)
+                if rejouer_rect.collidepoint(mouse_x, mouse_y):
                     game_state_mode = PLAYING
                     reset_game()
                 
-                # Bouton "Menu"
-                menu_button_rect = pygame.Rect(width // 2 - 120, height // 2 + 210, 240, 60)
-                if menu_button_rect.collidepoint(mouse_x, mouse_y):
+                # Zone cliquable MENU
+                menu_rect = pygame.Rect(400, 480, 150, 50)
+                if menu_rect.collidepoint(mouse_x, mouse_y):
                     game_state_mode = MENU
                     reset_game()
         
@@ -258,119 +263,14 @@ while True:
 
     # ========== AFFICHAGE DU MENU ==========
     if game_state_mode == MENU:
-        # Fond uni sombre
-        screen.fill((25, 25, 35))
-        
-        # Polices
-        font_title = pygame.font.Font(None, 90)
-        font_option = pygame.font.Font(None, 50)
-        font_small = pygame.font.Font(None, 28)
-        
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        
-        # === OPTIONS À GAUCHE ===
-        # JOUER
-        jouer_rect = pygame.Rect(80, height // 2 - 60, 200, 50)
-        jouer_hover = jouer_rect.collidepoint(mouse_x, mouse_y)
-        jouer_color = (220, 220, 220) if jouer_hover else (150, 150, 150)
-        jouer_text = font_option.render("JOUER", True, jouer_color)
-        screen.blit(jouer_text, (80, height // 2 - 60))
-        
-        # AIDE
-        aide_rect = pygame.Rect(80, height // 2 + 20, 200, 50)
-        aide_hover = aide_rect.collidepoint(mouse_x, mouse_y)
-        aide_color = (220, 220, 220) if aide_hover else (150, 150, 150)
-        aide_text = font_option.render("AIDE", True, aide_color)
-        screen.blit(aide_text, (80, height // 2 + 20))
-        
-        # === TITRE AU CENTRE-DROIT ===
-        title = font_title.render("PIXEL SURVIVOR", True, (200, 200, 200))
-        title_rect = title.get_rect(center=(width - 280, height // 2))
-        screen.blit(title, title_rect)
-        
-        # Petite ligne de séparation verticale
-        pygame.draw.line(screen, (60, 60, 70), (width // 2 - 50, height // 2 - 100), (width // 2 - 50, height // 2 + 100), 2)
-        
-        # Instructions en bas
-        info_text = font_small.render("Entrée: Jouer | Échap: Quitter", True, (80, 80, 90))
-        info_rect = info_text.get_rect(center=(width // 2, height - 40))
-        screen.blit(info_text, info_rect)
-        
+        render_menu(screen, width, height, pygame.mouse.get_pos())
         pygame.display.update()
         clock.tick(60)
         continue
 
     # ========== AFFICHAGE AIDE ==========
     if game_state_mode == HELP:
-        # Fond uni sombre (même que le menu)
-        screen.fill((25, 25, 35))
-        
-        font_title = pygame.font.Font(None, 70)
-        font_section = pygame.font.Font(None, 45)
-        font_text = pygame.font.Font(None, 32)
-        font_small = pygame.font.Font(None, 28)
-        
-        # Titre
-        title = font_title.render("AIDE", True, (200, 200, 200))
-        screen.blit(title, (60, 50))
-        
-        # === SECTION OBJECTIF ===
-        y_pos = 140
-        objectif_title = font_section.render("OBJECTIF", True, (180, 180, 180))
-        screen.blit(objectif_title, (60, y_pos))
-        
-        objectif_text = font_text.render("Survivez le plus longtemps possible a la degradation", True, (150, 150, 150))
-        screen.blit(objectif_text, (60, y_pos + 50))
-        
-        # === SECTION OBJETS ===
-        y_pos = 260
-        objets_title = font_section.render("OBJETS", True, (180, 180, 180))
-        screen.blit(objets_title, (60, y_pos))
-        
-        # Boule rouge - icône simple
-        pygame.draw.circle(screen, (255, 80, 80), (90, y_pos + 65), 16)
-        boule_text = font_text.render("Les Boule Rouge on pour role de reduire la degradation", True, (150, 150, 150))
-        screen.blit(boule_text, (130, y_pos + 50))
-        
-        # Étoile - icône simple
-        import math
-        cx, cy = 90, y_pos + 125
-        points = []
-        for i in range(10):
-            angle = (i * 36 - 90) * math.pi / 180
-            r = 16 if i % 2 == 0 else 7
-            points.append((cx + r * math.cos(angle), cy + r * math.sin(angle)))
-        pygame.draw.polygon(screen, (255, 215, 100), points)
-        
-        etoile_text = font_text.render("Les etoiles donnent des points : +100 par etoile", True, (150, 150, 150))
-        screen.blit(etoile_text, (130, y_pos + 110))
-        
-        # === SECTION CONTRÔLES ===
-        y_pos = 450
-        controles_title = font_section.render("CONTRÔLES", True, (180, 180, 180))
-        screen.blit(controles_title, (60, y_pos))
-        
-        controles = [
-            "Flèches - Pour se deplacer",
-            "Entrée - Pour commencer",
-            "Échap - Pour quitter"
-        ]
-        
-        for i, ctrl in enumerate(controles):
-            ctrl_text = font_text.render(ctrl, True, (150, 150, 150))
-            screen.blit(ctrl_text, (60, y_pos + 50 + i * 35))
-        
-        # Bouton retour en bas à droite
-        mouse_pos = pygame.mouse.get_pos()
-        retour_text = font_small.render("< RETOUR", True, (150, 150, 150))
-        retour_rect = retour_text.get_rect(bottomright=(width - 40, height - 40))
-        
-        # Effet hover
-        if retour_rect.collidepoint(mouse_pos):
-            retour_text = font_small.render("< RETOUR", True, (220, 220, 220))
-        
-        screen.blit(retour_text, retour_rect)
-        
+        render_aide(screen, width, height, pygame.mouse.get_pos())
         pygame.display.update()
         clock.tick(60)
         continue
@@ -494,51 +394,7 @@ while True:
 
     # ========== ÉCRAN GAME OVER ==========
     if game_state_mode == GAME_OVER:
-        # Fond uni sombre (même que le menu)
-        screen.fill((25, 25, 35))
-        
-        font_title = pygame.font.Font(None, 80)
-        font_stats = pygame.font.Font(None, 45)
-        font_option = pygame.font.Font(None, 40)
-        font_small = pygame.font.Font(None, 28)
-        
-        # Titre GAME OVER
-        title = font_title.render("GAME OVER", True, (200, 80, 80))
-        screen.blit(title, (60, 80))
-        
-        # === STATISTIQUES ===
-        y_pos = 200
-        stats_title = font_stats.render("STATISTIQUES", True, (180, 180, 180))
-        screen.blit(stats_title, (60, y_pos))
-        
-        # Score
-        score_text = font_option.render(f"Score: {game_state['score']}", True, (150, 150, 150))
-        screen.blit(score_text, (60, y_pos + 60))
-        
-
-        
-        # Étoiles collectées
-        stars_text = font_option.render(f"Étoiles: {game_state.get('stars_collected', 0)}", True, (150, 150, 150))
-        screen.blit(stars_text, (60, y_pos + 160))
-        
-        # === OPTIONS ===
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        y_pos = 480
-        
-        # REJOUER
-        rejouer_rect = pygame.Rect(60, y_pos, 250, 50)
-        rejouer_hover = rejouer_rect.collidepoint(mouse_x, mouse_y)
-        rejouer_color = (220, 220, 220) if rejouer_hover else (150, 150, 150)
-        rejouer_text = font_option.render("REJOUER (R)", True, rejouer_color)
-        screen.blit(rejouer_text, (60, y_pos))
-        
-        # MENU
-        menu_rect = pygame.Rect(400, y_pos, 150, 50)
-        menu_hover = menu_rect.collidepoint(mouse_x, mouse_y)
-        menu_color = (220, 220, 220) if menu_hover else (150, 150, 150)
-        menu_text = font_option.render("MENU", True, menu_color)
-        screen.blit(menu_text, (400, y_pos))
-        
+        render_gameover(screen, width, height, game_state, pygame.mouse.get_pos())
         pygame.display.update()
         clock.tick(60)
         continue

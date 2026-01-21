@@ -131,5 +131,4 @@ draw_pixel(11, 15, SHOES_DARK)
 
 
 img.save("assets/player.png")
-print("✓ Sprite du joueur créé : assets/player.png")
-print(f"  Dimensions : {WIDTH}x{HEIGHT} pixels")
+print(" Joueur créé")
